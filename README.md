@@ -7,10 +7,10 @@ El objetivo principal es construir una arquitectura de datos escalable, consiste
 ---
 
 # Integrantes
-- Sadane Geronimo Miguel Santiago Acevedo Virgues \n
--Julian Camilo Corredor Rojas \n
--Brayan Estif Calderon Gomez \n
--Yerlinson Maturana Serna 
+- Sadane Geronimo Miguel Santiago Acevedo Virgues
+- Julian Camilo Corredor Rojas
+- Brayan Estif Calderon Gomez
+- Yerlinson Maturana Serna 
 
 ---
 
