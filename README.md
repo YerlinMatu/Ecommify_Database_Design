@@ -1,3 +1,4 @@
+![](https://keystoneacademic-res.cloudinary.com/image/upload/c_pad,w_256,h_142/dpr_1/f_auto/q_auto/v1/element/15/159258_LogoUniSabanaAzul.png)
 # Ecommify Database Design
 
 Proyecto académico enfocado en el diseño conceptual, lógico y preliminar de la base de datos híbrida para **Ecommify**, una plataforma de comercio electrónico basada en PostgreSQL y MongoDB.
