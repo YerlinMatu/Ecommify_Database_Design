@@ -1,0 +1,9 @@
+.env.supabase
+database/postgresql/.env.supabase
+
+/.vscode/
+/database/postgresql/seed_data/*
+
+/.github/copilot-instructions.md 
+
+skills*
