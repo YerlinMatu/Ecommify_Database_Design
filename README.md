@@ -92,3 +92,22 @@ Ecommify_Database_Design/
 │   └── schema/
 └── notebooks/
     └── Data_Exploration_Analysis.ipynb
+
+
+## Comandos postgressql
+
+- lo primero que se realiza en verificar la conexion
+
+``` cli
+chmod 600 database/postgresql/.env.supabase
+export $(grep -v '^#' database/postgresql/.env.supabase | xargs)
+```
+
+- aplicar el esquema
+
+``` cli
+PGPASSWORD="$SUPABASE_DB_PASSWORD" psql "postgresql://$SUPABASE_DB_USER@$SUPABASE_DB_HOST:$SUPABASE_DB_PORT/$SUPABASE_DB_NAME?sslmode=require" -v ON_ERROR_STOP=1 -f database/postgresql/schema/schema.sql
+```
+
+- cargar los CSVS
+PGPASSWORD="$SUPABASE_DB_PASSWORD" psql "postgresql://$SUPABASE_DB_USER@$SUPABASE_DB_HOST:$SUPABASE_DB_PORT/$SUPABASE_DB_NAME?sslmode=require" -v ON_ERROR_STOP=1 -f database/postgresql/seed_data/seed_data.sql

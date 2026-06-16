@@ -1,104 +1,86 @@
 CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
-CREATE TABLE geolocation (
-    geolocation_zip_code_prefix TEXT PRIMARY KEY,
-    geolocation_lat DOUBLE PRECISION,
-    geolocation_lng DOUBLE PRECISION,
-    geolocation_city TEXT,
-    geolocation_state TEXT,
-    geolocation_geom geometry(Point,4326)
+CREATE TABLE IF NOT EXISTS geolocation (
+    geolocation_zip_code_prefix VARCHAR(10),
+    geolocation_lat             FLOAT,
+    geolocation_lng             FLOAT,
+    geolocation_city            VARCHAR(100),
+    geolocation_state           VARCHAR(2)
 );
 
-CREATE TABLE customers (
-    customer_id TEXT PRIMARY KEY,
-    customer_unique_id TEXT,
-    customer_zip_code_prefix TEXT REFERENCES geolocation(geolocation_zip_code_prefix),
-    customer_city TEXT,
-    customer_state TEXT
+CREATE TABLE IF NOT EXISTS product_category_name_translation (
+    product_category_name         VARCHAR(100) PRIMARY KEY,
+    product_category_name_english VARCHAR(100)
 );
 
-CREATE TABLE sellers (
-    seller_id TEXT PRIMARY KEY,
-    seller_zip_code_prefix TEXT REFERENCES geolocation(geolocation_zip_code_prefix),
-    seller_city TEXT,
-    seller_state TEXT
+CREATE TABLE IF NOT EXISTS customers (
+    customer_id              VARCHAR(50) PRIMARY KEY,
+    customer_unique_id       VARCHAR(50),
+    customer_zip_code_prefix VARCHAR(10),
+    customer_city            VARCHAR(100),
+    customer_state           VARCHAR(2)
 );
 
-CREATE TABLE product_category_name_translation (
-    product_category_name TEXT PRIMARY KEY,
-    product_category_name_english TEXT
+CREATE TABLE IF NOT EXISTS sellers (
+    seller_id              VARCHAR(50) PRIMARY KEY,
+    seller_zip_code_prefix VARCHAR(10),
+    seller_city            VARCHAR(100),
+    seller_state           VARCHAR(2)
 );
 
-CREATE TABLE products (
-    product_id TEXT PRIMARY KEY,
-    product_category_name TEXT REFERENCES product_category_name_translation(product_category_name),
-    product_name_length INT,
-    product_description_length INT,
-    product_photos_qty INT,
-    product_weight_g DOUBLE PRECISION,
-    product_length_cm DOUBLE PRECISION,
-    product_height_cm DOUBLE PRECISION
+CREATE TABLE IF NOT EXISTS products (
+    product_id                 VARCHAR(50) PRIMARY KEY,
+    product_category_name      VARCHAR(100) REFERENCES product_category_name_translation(product_category_name),
+    product_name_lenght        INT,
+    product_description_lenght INT,
+    product_photos_qty         INT,
+    product_weight_g           FLOAT,
+    product_length_cm          FLOAT,
+    product_height_cm          FLOAT,
+    product_width_cm           FLOAT
 );
 
-CREATE TABLE orders (
-    order_id TEXT,
-    customer_id TEXT REFERENCES customers(customer_id),
-    order_status TEXT,
-    order_purchase_timestamp TIMESTAMP WITH TIME ZONE,
-    order_approved_at TIMESTAMP WITH TIME ZONE,
-    order_delivered_carrier_date TIMESTAMP WITH TIME ZONE,
-    order_delivered_customer_date TIMESTAMP WITH TIME ZONE,
-    order_estimated_delivery_date TIMESTAMP WITH TIME ZONE,
-    -- La clave primaria debe incluir la columna de partición
-    PRIMARY KEY (order_id, order_purchase_timestamp)
-) PARTITION BY RANGE (order_purchase_timestamp);
-
--- Crear particiones (ejemplo para 2017 y partición por defecto)
-CREATE TABLE orders_2017 PARTITION OF orders
-    FOR VALUES FROM ('2017-01-01') TO ('2018-01-01');
-
-CREATE TABLE orders_default PARTITION OF orders DEFAULT;
-
-CREATE TABLE order_items (
-    order_item_id SERIAL PRIMARY KEY,
-    order_id TEXT,
-    order_purchase_timestamp TIMESTAMP WITH TIME ZONE,
-    product_id TEXT REFERENCES products(product_id),
-    seller_id TEXT REFERENCES sellers(seller_id),
-    shipping_limit_date TIMESTAMP WITH TIME ZONE,
-    price DOUBLE PRECISION,
-    freight_value DOUBLE PRECISION,
-    CONSTRAINT fk_order_items_orders FOREIGN KEY (order_id, order_purchase_timestamp)
-        REFERENCES orders(order_id, order_purchase_timestamp)
+CREATE TABLE IF NOT EXISTS orders (
+    order_id                      VARCHAR(50) PRIMARY KEY,
+    customer_id                   VARCHAR(50) REFERENCES customers(customer_id),
+    order_status                  VARCHAR(30),
+    order_purchase_timestamp      TIMESTAMP,
+    order_approved_at             TIMESTAMP,
+    order_delivered_carrier_date  TIMESTAMP,
+    order_delivered_customer_date TIMESTAMP,
+    order_estimated_delivery_date TIMESTAMP
 );
 
-CREATE TABLE order_payments (
-    order_id TEXT,
-    order_purchase_timestamp TIMESTAMP WITH TIME ZONE,
-    payment_sequential INT,
-    payment_type TEXT,
+CREATE TABLE IF NOT EXISTS order_items (
+    order_id            VARCHAR(50) REFERENCES orders(order_id),
+    order_item_id       INT,
+    product_id          VARCHAR(50) REFERENCES products(product_id),
+    seller_id           VARCHAR(50) REFERENCES sellers(seller_id),
+    shipping_limit_date TIMESTAMP,
+    price               FLOAT,
+    freight_value       FLOAT,
+    PRIMARY KEY (order_id, order_item_id)
+);
+
+CREATE TABLE IF NOT EXISTS order_payments (
+    order_id             VARCHAR(50) REFERENCES orders(order_id),
+    payment_sequential   INT,
+    payment_type         VARCHAR(30),
     payment_installments INT,
-    payment_value DOUBLE PRECISION,
-    CONSTRAINT fk_order_payments_orders FOREIGN KEY (order_id, order_purchase_timestamp)
-        REFERENCES orders(order_id, order_purchase_timestamp)
+    payment_value        FLOAT,
+    PRIMARY KEY (order_id, payment_sequential)
 );
 
-CREATE TABLE order_reviews (
-    review_id TEXT PRIMARY KEY,
-    order_id TEXT,
-    order_purchase_timestamp TIMESTAMP WITH TIME ZONE,
-    review_score INT,
-    review_comment_title TEXT,
-    review_comment_message TEXT,
-    review_creation_date TIMESTAMP WITH TIME ZONE,
-    review_answer_timestamp TIMESTAMP WITH TIME ZONE,
-    CONSTRAINT fk_order_reviews_orders FOREIGN KEY (order_id, order_purchase_timestamp)
-        REFERENCES orders(order_id, order_purchase_timestamp)
+CREATE TABLE IF NOT EXISTS order_reviews (
+    review_id               VARCHAR(50) PRIMARY KEY,
+    order_id                VARCHAR(50) REFERENCES orders(order_id),
+    review_score            INT,
+    review_comment_title    TEXT,
+    review_comment_message  TEXT,
+    review_creation_date    TIMESTAMP,
+    review_answer_timestamp TIMESTAMP
 );
 
--- 5. Índices recomendados
-CREATE INDEX IF NOT EXISTS idx_customers_unique_id ON customers(customer_unique_id);
-CREATE INDEX IF NOT EXISTS idx_products_category ON products(product_category_name);
-CREATE INDEX IF NOT EXISTS idx_orders_purchase_brin ON orders USING BRIN (order_purchase_timestamp);
-CREATE INDEX IF NOT EXISTS idx_product_category_trgm ON product_category_name_translation USING GIN (product_category_name gin_trgm_ops);
+-- Permisos para inserción desde la anon key
+GRANT SELECT, INSERT ON ALL TABLES IN SCHEMA public TO anon;

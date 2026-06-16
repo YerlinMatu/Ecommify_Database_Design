@@ -7,3 +7,5 @@ database/postgresql/.env.supabase
 /.github/copilot-instructions.md 
 
 skills*
+
+database/postgresql/schema_sql_ipynbn.ipynb:Zone.Identifier
