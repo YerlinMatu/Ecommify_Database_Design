@@ -71,3 +71,61 @@ fi
 
 echo -e "${GREEN}=== BENCHMARK FINALIZADO CON ÉXITO ===${NC}"
 echo -e "Los resultados listos para tu informe de Word están en: ${YELLOW}database/postgresql/queries/evidence/${NC}"
+
+# =============================================================================
+# RESUMEN: extraer y mostrar tiempos 'Execution Time' de los explains
+# =============================================================================
+ANTES_FILE="database/postgresql/queries/evidence/explain_ANTES.txt"
+DESPUES_FILE="database/postgresql/queries/evidence/explain_DESPUES.txt"
+
+echo -e "\n${YELLOW}=== RESUMEN: Tiempos de Execution Time (ms) por consulta ===${NC}"
+
+if [ -f "$ANTES_FILE" ] || [ -f "$DESPUES_FILE" ]; then
+    tmp_antes=$(mktemp)
+    tmp_despues=$(mktemp)
+
+    if [ -f "$ANTES_FILE" ]; then
+        grep "Execution Time" "$ANTES_FILE" | sed -E 's/.*Execution Time: ([0-9]+(\.[0-9]+)?) ms.*/\1/' > "$tmp_antes" || true
+    fi
+    if [ -f "$DESPUES_FILE" ]; then
+        grep "Execution Time" "$DESPUES_FILE" | sed -E 's/.*Execution Time: ([0-9]+(\.[0-9]+)?) ms.*/\1/' > "$tmp_despues" || true
+    fi
+
+    cnt_before=$(wc -l < "$tmp_antes" 2>/dev/null || echo 0)
+    cnt_after=$(wc -l < "$tmp_despues" 2>/dev/null || echo 0)
+    maxcnt=$(( cnt_before > cnt_after ? cnt_before : cnt_after ))
+
+    if [ "$maxcnt" -eq 0 ]; then
+        echo "No se encontraron líneas 'Execution Time' en los archivos explain."
+    else
+        printf "%-6s | %-12s | %-12s | %-10s\n" "Q#" "ANTES (ms)" "DESPUES (ms)" "% Mejora"
+        printf "%-6s-+-%-12s-+-%-12s-+-%-10s\n" "------" "------------" "------------" "----------"
+
+        for i in $(seq 1 $maxcnt); do
+            antes_val=$(sed -n "${i}p" "$tmp_antes" 2>/dev/null || echo 0)
+            despues_val=$(sed -n "${i}p" "$tmp_despues" 2>/dev/null || echo 0)
+            antes_val=${antes_val:-0}
+            despues_val=${despues_val:-0}
+            if awk "BEGIN{exit !($antes_val > 0)}"; then
+                mejora=$(awk -v a=$antes_val -v b=$despues_val 'BEGIN{printf "%.2f", ((a-b)/a)*100}')
+            else
+                mejora="N/A"
+            fi
+            printf "%-6s | %-12s | %-12s | %-9s%%\n" "Q${i}" "$antes_val" "$despues_val" "$mejora"
+        done
+
+        sum_before=$(awk '{sum+=$1} END{printf "%.2f", sum}' "$tmp_antes" 2>/dev/null || echo 0)
+        sum_after=$(awk '{sum+=$1} END{printf "%.2f", sum}' "$tmp_despues" 2>/dev/null || echo 0)
+        if awk "BEGIN{exit !($sum_before > 0)}"; then
+            total_mejora=$(awk -v a=$sum_before -v b=$sum_after 'BEGIN{printf "%.2f", ((a-b)/a)*100}')
+        else
+            total_mejora="N/A"
+        fi
+        printf "\n%-6s | %-12s | %-12s | %-9s%%\n" "TOTAL" "$sum_before" "$sum_after" "$total_mejora"
+
+    fi
+
+    rm -f "$tmp_antes" "$tmp_despues"
+else
+    echo "No se encontraron archivos de explain para resumir."
+fi

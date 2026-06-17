@@ -1,77 +1,69 @@
                                                                             QUERY PLAN                                                                             
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
- Limit  (cost=5955.33..5955.36 rows=10 width=41) (actual time=65.150..65.152 rows=10 loops=1)
-   ->  Sort  (cost=5955.33..6203.93 rows=99441 width=41) (actual time=65.148..65.150 rows=10 loops=1)
+ Limit  (cost=5924.53..5924.56 rows=10 width=41) (actual time=64.381..64.383 rows=10 loops=1)
+   ->  Sort  (cost=5924.53..6173.13 rows=99441 width=41) (actual time=64.379..64.381 rows=10 loops=1)
          Sort Key: (count(*)) DESC
          Sort Method: top-N heapsort  Memory: 25kB
-         ->  GroupAggregate  (cost=0.42..3806.45 rows=99441 width=41) (actual time=0.041..49.176 rows=99441 loops=1)
+         ->  GroupAggregate  (cost=0.42..3775.65 rows=99441 width=41) (actual time=0.060..48.497 rows=99441 loops=1)
                Group Key: customer_id
-               ->  Index Only Scan using idx_orders_customer_id on orders  (cost=0.42..2314.83 rows=99441 width=33) (actual time=0.034..14.862 rows=99441 loops=1)
-                     Heap Fetches: 1540
- Planning Time: 0.668 ms
- Execution Time: 65.252 ms
+               ->  Index Only Scan using idx_orders_customer_id on orders  (cost=0.42..2284.03 rows=99441 width=33) (actual time=0.053..14.421 rows=99441 loops=1)
+                     Heap Fetches: 0
+ Planning Time: 0.831 ms
+ Execution Time: 64.481 ms
 (10 rows)
 
-                                                                    QUERY PLAN                                                                     
----------------------------------------------------------------------------------------------------------------------------------------------------
- Limit  (cost=8170.84..8173.66 rows=30 width=12) (actual time=39.448..39.924 rows=30 loops=1)
-   ->  Finalize GroupAggregate  (cost=8170.84..17444.42 rows=98442 width=12) (actual time=39.447..39.919 rows=30 loops=1)
-         Group Key: (date(order_purchase_timestamp))
-         ->  Gather Merge  (cost=8170.84..15921.42 rows=58495 width=12) (actual time=39.440..39.903 rows=45 loops=1)
-               Workers Planned: 1
-               Workers Launched: 1
-               ->  Partial GroupAggregate  (cost=7170.83..8340.73 rows=58495 width=12) (actual time=19.349..20.059 rows=319 loops=2)
-                     Group Key: (date(order_purchase_timestamp))
-                     ->  Sort  (cost=7170.83..7317.06 rows=58495 width=4) (actual time=19.340..19.621 rows=4112 loops=2)
-                           Sort Key: (date(order_purchase_timestamp)) DESC
-                           Sort Method: external merge  Disk: 1104kB
-                           Worker 0:  Sort Method: quicksort  Memory: 193kB
-                           ->  Parallel Seq Scan on orders  (cost=0.00..2539.18 rows=58495 width=4) (actual time=0.015..10.905 rows=49720 loops=2)
-                                 Filter: (order_purchase_timestamp IS NOT NULL)
- Planning Time: 0.187 ms
- Execution Time: 40.284 ms
-(16 rows)
+                                                                           QUERY PLAN                                                                           
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.29..210.24 rows=30 width=12) (actual time=0.038..3.121 rows=30 loops=1)
+   ->  GroupAggregate  (cost=0.29..4332.15 rows=619 width=12) (actual time=0.038..3.116 rows=30 loops=1)
+         Group Key: date(order_purchase_timestamp)
+         ->  Index Scan Backward using idx_orders_purchase_date on orders  (cost=0.29..3827.21 rows=99441 width=4) (actual time=0.027..2.937 rows=1881 loops=1)
+               Filter: (order_purchase_timestamp IS NOT NULL)
+ Planning Time: 0.186 ms
+ Execution Time: 3.185 ms
+(7 rows)
 
                                                                                      QUERY PLAN                                                                                     
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- Limit  (cost=6068.94..6068.96 rows=10 width=41) (actual time=76.740..76.742 rows=10 loops=1)
-   ->  Sort  (cost=6068.94..6289.36 rows=88170 width=41) (actual time=76.739..76.740 rows=10 loops=1)
+ Limit  (cost=6053.45..6053.48 rows=10 width=41) (actual time=72.537..72.540 rows=10 loops=1)
+   ->  Sort  (cost=6053.45..6272.65 rows=87680 width=41) (actual time=72.536..72.537 rows=10 loops=1)
          Sort Key: (sum(price)) DESC
          Sort Method: top-N heapsort  Memory: 26kB
-         ->  GroupAggregate  (cost=0.42..4163.62 rows=88170 width=41) (actual time=0.030..60.215 rows=98666 loops=1)
+         ->  GroupAggregate  (cost=0.42..4158.72 rows=87680 width=41) (actual time=0.045..57.009 rows=98666 loops=1)
                Group Key: order_id
-               ->  Index Only Scan using idx_order_items_orderid_price on order_items oi  (cost=0.42..2718.67 rows=112650 width=41) (actual time=0.023..18.293 rows=112650 loops=1)
+               ->  Index Only Scan using idx_order_items_orderid_price on order_items oi  (cost=0.42..2718.67 rows=112650 width=41) (actual time=0.037..17.534 rows=112650 loops=1)
                      Heap Fetches: 0
- Planning Time: 0.373 ms
- Execution Time: 76.786 ms
+ Planning Time: 0.449 ms
+ Execution Time: 72.578 ms
 (10 rows)
 
-                                                                                    QUERY PLAN                                                                                    
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- Limit  (cost=9352.39..9352.42 rows=10 width=64) (actual time=456.014..456.017 rows=10 loops=1)
-   ->  Sort  (cost=9352.39..9434.77 rows=32951 width=64) (actual time=456.013..456.014 rows=10 loops=1)
+                                                                                        QUERY PLAN                                                                                        
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=7495.59..7495.62 rows=10 width=64) (actual time=115.853..115.857 rows=10 loops=1)
+   ->  Sort  (cost=7495.59..7577.97 rows=32951 width=64) (actual time=115.851..115.853 rows=10 loops=1)
          Sort Key: (sum(oi.price)) DESC
          Sort Method: top-N heapsort  Memory: 27kB
-         ->  GroupAggregate  (cost=0.83..8640.33 rows=32951 width=64) (actual time=0.056..448.060 rows=32951 loops=1)
+         ->  GroupAggregate  (cost=0.83..6783.53 rows=32951 width=64) (actual time=0.063..108.300 rows=32951 loops=1)
                Group Key: p.product_id
-               ->  Merge Join  (cost=0.83..7465.95 rows=112650 width=56) (actual time=0.033..415.663 rows=112650 loops=1)
+               ->  Merge Join  (cost=0.83..5609.15 rows=112650 width=56) (actual time=0.048..78.206 rows=112650 loops=1)
                      Merge Cond: ((oi.product_id)::text = (p.product_id)::text)
-                     ->  Index Scan using idx_order_items_productid on order_items oi  (cost=0.42..4577.66 rows=112650 width=41) (actual time=0.015..151.070 rows=112650 loops=1)
-                     ->  Index Scan using products_pkey on products p  (cost=0.41..1397.78 rows=32951 width=48) (actual time=0.013..216.683 rows=32951 loops=1)
- Planning Time: 11.402 ms
- Execution Time: 456.131 ms
-(12 rows)
+                     ->  Index Only Scan using idx_order_items_product_price on order_items oi  (cost=0.42..2720.87 rows=112650 width=41) (actual time=0.027..19.252 rows=112650 loops=1)
+                           Heap Fetches: 0
+                     ->  Index Scan using products_pkey on products p  (cost=0.41..1397.78 rows=32951 width=48) (actual time=0.017..23.560 rows=32951 loops=1)
+ Planning Time: 0.743 ms
+ Execution Time: 115.945 ms
+(13 rows)
 
                                                           QUERY PLAN                                                          
 ------------------------------------------------------------------------------------------------------------------------------
- Sort  (cost=3229.74..3229.75 rows=5 width=12) (actual time=29.063..29.064 rows=5 loops=1)
+ Sort  (cost=3248.74..3248.75 rows=5 width=12) (actual time=28.935..28.937 rows=5 loops=1)
    Sort Key: review_score
    Sort Method: quicksort  Memory: 25kB
-   ->  HashAggregate  (cost=3229.63..3229.68 rows=5 width=12) (actual time=29.044..29.045 rows=5 loops=1)
+   ->  HashAggregate  (cost=3248.63..3248.68 rows=5 width=12) (actual time=28.921..28.923 rows=5 loops=1)
          Group Key: review_score
          Batches: 1  Memory Usage: 24kB
-         ->  Seq Scan on order_reviews  (cost=0.00..2747.42 rows=96442 width=4) (actual time=0.022..9.574 rows=96442 loops=1)
- Planning Time: 0.197 ms
- Execution Time: 29.142 ms
+         ->  Seq Scan on order_reviews  (cost=0.00..2766.42 rows=96442 width=4) (actual time=0.009..9.647 rows=96442 loops=1)
+ Planning Time: 0.238 ms
+ Execution Time: 28.998 ms
 (9 rows)
 
