@@ -83,4 +83,4 @@ CREATE TABLE IF NOT EXISTS order_reviews (
 );
 
 -- Permisos para inserción desde la anon key
-GRANT SELECT, INSERT ON ALL TABLES IN SCHEMA public TO anon;
+GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA public TO anon;

@@ -9,3 +9,4 @@ database/postgresql/.env.supabase
 skills*
 
 database/postgresql/schema_sql_ipynbn.ipynb:Zone.Identifier
+notebooks/Data_Exploration_Analysis.ipynb:Zone.Identifier

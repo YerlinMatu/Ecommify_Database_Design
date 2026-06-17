@@ -40,14 +40,6 @@ FROM order_reviews
 GROUP BY review_score
 ORDER BY review_score;
 
--- 6) CLTV (baseline)
-EXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT)
-SELECT o.customer_id, SUM(oi.price) AS revenue
-FROM orders o
-JOIN order_items oi USING (order_id)
-GROUP BY o.customer_id
-ORDER BY revenue DESC
-LIMIT 20;
 
 -- 7) Tiempo medio de entrega (baseline)
 EXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT)
