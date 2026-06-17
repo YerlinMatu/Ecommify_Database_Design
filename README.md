@@ -79,19 +79,54 @@ Se utiliza como complemento para:
 # Estructura del repositorio
 
 ```plaintext
-Ecommify_Database_Design/
+├── CSV
+│   ├── olist_customers_dataset.csv
+│   ├── olist_geolocation_dataset.csv
+│   ├── olist_order_items_dataset.csv
+│   ├── olist_order_payments_dataset.csv
+│   ├── olist_order_reviews_dataset.csv
+│   ├── olist_orders_dataset.csv
+│   ├── olist_products_dataset.csv
+│   ├── olist_sellers_dataset.csv
+│   └── product_category_name_translation.csv
 ├── README.md
-├── docs/
-│   ├── Documento_Tecnico_Diseno.pdf
-│   └── Presentacion_Ejecutiva.pdf
-├── postgresql/
-│   ├── schema/
-│   ├── seed_data/
-│   └── queries/
-├── mongodb/
-│   └── schema/
-└── notebooks/
-    └── Data_Exploration_Analysis.ipynb
+├── assets
+│   ├── image-1.png
+│   ├── image-2.png
+│   └── image.png
+├── database
+│   ├── mongodb
+│   │   └── schema
+│   │       └── schema.js
+│   └── postgresql
+│       ├── apply_schema_and_seed.sh
+│       ├── queries
+│       │   ├── README.md
+│       │   ├── create_indexes.sql
+│       │   ├── critical_queries.sql
+│       │   ├── evidence
+│       │   │   ├── critical_results.txt
+│       │   │   ├── explain_ANTES.txt
+│       │   │   └── explain_DESPUES.txt
+│       │   ├── normal_queries.sql
+│       │   ├── optimized_queries_explain.sql
+│       │   └── queries.sql
+│       ├── schema
+│       │   ├── alter_schema.sql
+│       │   └── schema.sql
+│       ├── schema_sql_ipynbn.ipynb
+│       ├── schema_sql_ipynbn.ipynb:Zone.Identifier
+│       └── seed_data
+│           └── seed_data.sql
+├── docs
+│   ├── Documento_Tecnico_Diseno.pdf
+│   └── Presentacion_Ejecutiva.pdf.pdf
+├── notebooks
+│   ├── Data_Exploration_Analysis.ipynb
+│   └── Data_Exploration_Analysis.ipynb:Zone.Identifier
+├── run_benchmark.sh
+└── scripts
+    └── setup_supabase.py
 ```
 
 # Comandos postgressql
@@ -374,10 +409,29 @@ PGPASSWORD="$SUPABASE_DB_PASSWORD" psql "postgresql://$SUPABASE_DB_USER@$SUPABAS
 PGPASSWORD="$SUPABASE_DB_PASSWORD" psql "postgresql://$SUPABASE_DB_USER@$SUPABASE_DB_HOST:$SUPABASE_DB_PORT/$SUPABASE_DB_NAME?sslmode=require" --pset=pager=off -f database/postgresql/queries/optimized_queries_explain.sql > database/postgresql/queries/evidence/explain_DESPUES.txt
 ```
 
-
-
 - queries criticos
 
 ``` cli
 PGPASSWORD="$SUPABASE_DB_PASSWORD" psql "postgresql://$SUPABASE_DB_USER@$SUPABASE_DB_HOST:$SUPABASE_DB_PORT/$SUPABASE_DB_NAME?sslmode=require" --pset=pager=off -f database/postgresql/queries/critical_queries.sql > database/postgresql/queries/evidence/critical_results.txt
+```
+
+- para poder realizar todos los pasos enteriormente dichos se creo un script que se ejecuta con el siguiente comando
+
+``` cli
+./run_benchmark.sh
+```
+
+dando los siguientes resultados:
+
+``` cli
+Q#     | ANTES (ms)   | DESPUES (ms) | % Mejora
+-------+--------------+--------------+-----------
+Q1     | 475.162      | 389.210      | 18.09    %
+Q2     | 1074.282     | 6.544        | 99.39    %
+Q3     | 1475.836     | 756.753      | 48.72    %
+Q4     | 1035.162     | 522.520      | 49.52    %
+Q5     | 726.671      | 32.863       | 95.48    %
+Q6     | 173.014      | 187.242      | -8.22    %
+
+TOTAL  | 4960.13      | 1895.13      | 61.79    %
 ```
