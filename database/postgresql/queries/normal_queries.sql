@@ -41,7 +41,7 @@ GROUP BY review_score
 ORDER BY review_score;
 
 
--- 7) Tiempo medio de entrega (baseline)
+-- 6) Tiempo medio de entrega (baseline)
 EXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT)
 SELECT AVG(EXTRACT(EPOCH FROM (order_delivered_customer_date - order_approved_at))/86400.0) AS avg_delivery_days
 FROM orders

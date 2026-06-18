@@ -96,12 +96,10 @@ Se utiliza como complemento para:
 │   └── image.png
 ├── database
 │   ├── mongodb
-│   │   └── schema
-│   │       └── schema.js
+│   │   ├── Ecommify_MongoDB.ipynb
+│   │   └── readme.md
 │   └── postgresql
-│       ├── apply_schema_and_seed.sh
 │       ├── queries
-│       │   ├── README.md
 │       │   ├── create_indexes.sql
 │       │   ├── critical_queries.sql
 │       │   ├── evidence
@@ -109,24 +107,18 @@ Se utiliza como complemento para:
 │       │   │   ├── explain_ANTES.txt
 │       │   │   └── explain_DESPUES.txt
 │       │   ├── normal_queries.sql
-│       │   ├── optimized_queries_explain.sql
-│       │   └── queries.sql
+│       │   └── optimized_queries_explain.sql
 │       ├── schema
 │       │   ├── alter_schema.sql
 │       │   └── schema.sql
-│       ├── schema_sql_ipynbn.ipynb
 │       ├── schema_sql_ipynbn.ipynb:Zone.Identifier
 │       └── seed_data
-│           └── seed_data.sql
+│           └── seed_data.ipynb
 ├── docs
 │   ├── Documento_Tecnico_Diseno.pdf
-│   └── Presentacion_Ejecutiva.pdf.pdf
-├── notebooks
-│   ├── Data_Exploration_Analysis.ipynb
-│   └── Data_Exploration_Analysis.ipynb:Zone.Identifier
-├── run_benchmark.sh
-└── scripts
-    └── setup_supabase.py
+│   ├── Presentacion_Ejecutiva.pdf.pdf
+│   └── bases_de_datos_unidad_5.pdf
+└── run_benchmark.sh
 ```
 
 # Comandos postgressql
